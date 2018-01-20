@@ -1,0 +1,3 @@
+[submodule "normalizer"]
+	path = normalizer
+	url = https://github.com/RyanMolina/text-normalizer
