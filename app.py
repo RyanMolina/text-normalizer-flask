@@ -7,7 +7,7 @@ import argparse
 import tensorflow as tf
 from flask import (Flask, render_template, jsonify, Response,
                    stream_with_context, Markup, request)
-import serve
+from normalizer import serve
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 APP = Flask(__name__)
@@ -138,36 +138,8 @@ def server_error(error):
     """.format(error), 500
 
 
-def parse_args():
-    """Parse the arguments needed before running.
-    Returns:
-        args: contains the parsed arguments
-    """
-
-    parser = argparse.ArgumentParser(
-        description="Dir of your selected model and the checkpoint.")
-
-    parser.add_argument('--model_name', default='model_served', type=str,
-                        help="""
-                        Name of the model to use.
-                        Change only if you want to try other models.
-                        (Default: 'model_served')
-                        """)
-    parser.add_argument('--checkpoint', default=None, type=str,
-                        help="""
-                        Specify the checkpoint filename.
-                        (Default: latest checkpoint)
-                        """)
-    parser.add_argument('--char_emb', default=False, type=bool,
-                        help="""
-                        Char-level or word-level embedding
-                        """
-                        )
-    return parser.parse_args()
-
-
 if __name__ == '__main__':
-    ARGS = parse_args()
+    ARGS = serve.parse_args()
     with tf.Session() as sess:
         NORMALIZER = serve.Serve(sess=sess,
                                  model_name=ARGS.model_name,
