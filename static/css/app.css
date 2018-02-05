@@ -2,6 +2,7 @@
   min-height: 400px;
   resize: none;
   overflow: hidden;
+  border: 1px solid #1779ba;
 }
 
 textarea:disabled.custom-ta {
@@ -14,4 +15,12 @@ textarea:disabled.custom-ta {
   color: #aaa;
 }
 
+.button {
+  margin-bottom: 0;
+}
 
+.cancel-btn {
+  position: absolute;
+  right: 8px;
+  transform: translateY(25%);
+}

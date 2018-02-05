@@ -60,7 +60,7 @@ $(document).ready(function($) {
         readDecText(decFile)
     })
 
-    function checkFiles() {
+    function toggleNormalizeButton() {
         if ($('#dec-data').val().length !== 0 && $('#enc-data').val().length !== 0) {
             $('#normalize').show()
         } else {
@@ -74,7 +74,7 @@ $(document).ready(function($) {
         reader.onload = (function (f) {
             return function(e) {
                 $('#enc-data').val(e.target.result)
-                checkFiles()
+                toggleNormalizeButton()
             };
         })(file);
         reader.readAsText(file);
@@ -86,7 +86,7 @@ $(document).ready(function($) {
         reader.onload = (function (f) {
             return function(e) {
                 $('#dec-data').val(e.target.result)
-                checkFiles()
+                toggleNormalizeButton()
             };
         })(file);
         reader.readAsText(file);
@@ -104,5 +104,13 @@ $(document).ready(function($) {
             }
         });
     } 
+
+    $('#cancel-dec-file').click(function() {
+        $('#dec-filename').html('No file selected')
+    });
+
+    $('#cancel-enc-file').click(function() {
+        $('#enc-filename').html('No file selected')
+    });
 
 });
