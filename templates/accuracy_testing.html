@@ -1,6 +1,10 @@
 {% include 'head.html' %}
 <body>
   <div class="grid-container">
+    {% set total = namespace() %}
+    {% set correct = namespace() %}
+    {% set total.value = 0 %}
+    {% set correct.value = 0 %}
     <table id="results-table" class="stack">
       <thead>
         <tr>
@@ -11,10 +15,6 @@
         </tr>
       </thead>
       <tbody>
-      {% set total = namespace() %}
-      {% set correct = namespace() %}
-      {% set total.value = 0 %}
-      {% set correct.value = 0 %}
       {% for e in rows %}
         {% set total.value = total.value + 1 %}
         {% if e['dec'] == e['res'] %}

@@ -1,5 +1,5 @@
 $(document).ready(function($) {
-
+    $('.custom-ta').val('')
     $('#normalize').hide()
     $('#results-table').insertAfter($('#accuracy'))
 
@@ -25,8 +25,6 @@ $(document).ready(function($) {
         }
     });
 
-    
-
     $('#export').click(function() {
         var csv_value = $('#results-table').table2CSV({
             header:['No', 'Input', 'Expected', 'Result'],
@@ -44,7 +42,6 @@ $(document).ready(function($) {
         document.body.removeChild(downloadLink);
     });
 
-
     var encFile = ""
     var decFile = ""
 
@@ -61,7 +58,7 @@ $(document).ready(function($) {
     })
 
     function toggleNormalizeButton() {
-        if ($('#dec-data').val().length !== 0 && $('#enc-data').val().length !== 0) {
+        if (encFile.length !== 0 && decFile.length !== 0) {
             $('#normalize').show()
         } else {
             $('#normalize').hide()
@@ -99,7 +96,7 @@ $(document).ready(function($) {
             data: {'src': text},
             success: function(data) {
                 if($('#encoded').val() !== "") {
-                    $("#decoded").html(data['tgt'])
+                    $("#decoded").val(data['tgt'])
                 }
             }
         });
@@ -107,10 +104,14 @@ $(document).ready(function($) {
 
     $('#cancel-dec-file').click(function() {
         $('#dec-filename').html('No file selected')
+        decFile = ""
+        toggleNormalizeButton()
     });
 
     $('#cancel-enc-file').click(function() {
         $('#enc-filename').html('No file selected')
+        encFile = ''
+        toggleNormalizeButton()
     });
 
 });

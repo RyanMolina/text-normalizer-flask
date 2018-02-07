@@ -1,13 +1,12 @@
 .custom-ta {
   min-height: 400px;
   resize: none;
-  overflow: hidden;
   border: 1px solid #1779ba;
 }
 
 textarea:disabled.custom-ta {
   cursor: auto !important;
-  background-color: transparent;
+  background: transparent;
 }
 
 #chars {
