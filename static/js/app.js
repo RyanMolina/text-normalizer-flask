@@ -1,5 +1,13 @@
+$(document).foundation();
 $(document).ready(function($) {
+
     $('.custom-ta').val('')
+    $('#dec-data').val('')
+    $('#enc-data').val('')
+    
+
+    $('#cancel-dec-file').hide()
+    $('#cancel-enc-file').hide()
     $('#normalize').hide()
     $('#results-table').insertAfter($('#accuracy'))
 
@@ -11,17 +19,17 @@ $(document).ready(function($) {
         };
     })();
 
-    var maxLength = 280;
+    var maxLength = 140;
     $('#encoded').on("input", function() {
         var text = $(this).val()
         var length = text.length
-        $('#chars').text(length+"/280");
-        if (text != "") {
+        $('#chars').text(length+"/140");
+        if (text !== "") {
             delay(function() {
                 normalize(text)
-            }, 1000);
+            }, 1000)
         } else {
-            $('#decoded').text('')
+            $('#decoded').val('')
         }
     });
 
@@ -71,6 +79,7 @@ $(document).ready(function($) {
         reader.onload = (function (f) {
             return function(e) {
                 $('#enc-data').val(e.target.result)
+                $('#cancel-enc-file').show()
                 toggleNormalizeButton()
             };
         })(file);
@@ -83,6 +92,7 @@ $(document).ready(function($) {
         reader.onload = (function (f) {
             return function(e) {
                 $('#dec-data').val(e.target.result)
+                $('#cancel-dec-file').show()
                 toggleNormalizeButton()
             };
         })(file);
@@ -97,6 +107,8 @@ $(document).ready(function($) {
             success: function(data) {
                 if($('#encoded').val() !== "") {
                     $("#decoded").val(data['tgt'])
+                } else {
+                    $('#decoded').val('')
                 }
             }
         });
