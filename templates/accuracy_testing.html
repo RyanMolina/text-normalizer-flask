@@ -1,10 +1,39 @@
 {% include 'head.html' %}
 <body>
   <div class="grid-container">
-    {% set total = namespace() %}
-    {% set correct = namespace() %}
-    {% set total.value = 0 %}
-    {% set correct.value = 0 %}
+    {% set word_level_total = namespace() %}
+    {% set word_level_total.value = 0 %}
+
+    {% set word_level_fp = namespace() %}
+    {% set word_level_tp = namespace() %}
+    {% set word_level_tn = namespace() %}
+    {% set word_level_fp.value = 0 %}
+    {% set word_level_tp.value = 0 %}
+    {% set word_level_tn.value = 0 %}
+  
+    {% set sent_level_total = namespace() %}
+    {% set sent_level_total.value = 0 %}
+    {% set sent_level_fp = namespace() %}
+    {% set sent_level_tn = namespace() %}
+    {% set sent_level_tp = namespace() %}
+    {% set sent_level_fp.value = 0 %}
+    {% set sent_level_tn.value = 0 %}
+    {% set sent_level_tp.value = 0 %}
+
+    {% set accent_styles_count = namespace() %}
+    {% set phonetic_styles_count = namespace() %}
+    {% set contractions_count = namespace() %}
+    {% set misspellings_count = namespace() %}
+    {% set repeating_characters_count = namespace() %}
+    {% set repeating_units_count = namespace() %}
+
+    {% set accent_styles_count.value = 0 %}
+    {% set phonetic_styles_count.value = 0 %}
+    {% set contractions_count.value = 0 %}
+    {% set misspellings_count.value = 0 %}
+    {% set repeating_characters_count.value = 0 %}
+    {% set repeating_units_count.value = 0 %}
+
     <table id="results-table" class="stack">
       <thead>
         <tr>
@@ -16,35 +45,176 @@
       </thead>
       <tbody>
       {% for e in rows %}
-        {% set total.value = total.value + 1 %}
-        {% if e['dec'] == e['res'] %}
-          {% set correct.value = correct.value + 1 %}
+        {% set sent_level_total.value = loop.index %}
+        {% set enc_words = e['enc'].split() %}
+        {% for word in enc_words %}
+          {% set tag = tagged_words.get(word) %}
+          {% if tag == 'accent_styles' %}
+            {% set accent_styles_count.value = accent_styles_count.value + 1 %}
+          {% elif tag == 'phonetic_styles' %}
+            {% set phonetic_styles_count.value = phonetic_styles_count.value + 1 %}
+          {% elif tag == 'contractions' %}
+            {% set contractions_count.value = contractions_count.value + 1 %}
+          {% elif tag == 'misspellings' %}
+            {% set misspellings_count.value = misspellings_count.value + 1 %}
+          {% elif tag == 'repeating_characters' %}
+            {% set repeating_characters_count.value = repeating_characters_count.value + 1 %}
+          {% elif tag == 'repeating_units' %}
+            {% set repeating_units_count.value = repeating_units_count.value + 1 %}
+          {% else %}
+            {% set misspellings_count.value = misspellings_count.value + 1 %}
+          {% endif %}
+        {% endfor %}
+        
+        {% set errors = namespace() %}
+        {% set errors.value = highlight_incorrect(e['enc'], e['dec'], e['res']) %}
+
+        {% set word_level_fp.value = word_level_fp.value + errors.value[1].fp %}
+        {% set word_level_tp.value = word_level_tp.value + errors.value[1].tp %}
+        {% set word_level_tn.value = word_level_tn.value + errors.value[1].tn %}
+        {% set word_level_total.value = word_level_total.value
+                                        + errors.value[1].fp
+                                        + errors.value[1].tp
+                                        + errors.value[1].tn
+        %}
+
+        {% if e['enc'] == e['dec'] != e['res'] %}
+          {% set sent_level_fp.value = sent_level_fp.value + 1 %}
+        {% elif e['dec'] == e['res'] %}
+          {% set sent_level_tp.value = sent_level_tp.value + 1 %}
+        {% else %}
+          {% set sent_level_tn.value = sent_level_tn.value + 1 %}
         {% endif %}
+
         <tr>
-          <td>{{ total.value }}</td>
+          <td>{{ loop.index }}</td>
           <td>{{ e['enc'] }}</td>
-          <td>{{ e['dec']|join(' ') }}</td>
-          <td>{{ highlight_incorrect(e['dec'], e['res']) }}</td>
+          <td>{{ e['dec'] }}</td>
+          <td>{{ errors.value[0] }}</td>
         </tr>
       {% endfor %}
       </tbody>
     </table>
+
     <div id="accuracy">
+      {# Informal words count #}
       <div class="grid-x align-center">
-        <div class="large-4 small-12 cell text-center">
-          <p>Total</p>
-          <div class="stat">{{ total.value }}</div>
+        <h1 class="cell text-center">Analysis</h1>
+        <div class="large-2 small-12 cell text-center">
+          <p>Accent Style</p>
+          <div class="stat">{{ accent_styles_count.value }}</div>
         </div>
-        <div class="large-4 small-12 cell text-center">
-          <p>Correct</p>
-          <div class="stat">{{ correct.value }}</div>
+        <div class="large-2 small-12 cell text-center">
+          <p>Phonetic Style</p>
+          <div class="stat">{{ phonetic_styles_count.value }}</div>
         </div>
-        <div class="large-4 small-12 cell text-center">
-          <p>Accuracy</p>
-          <div class="stat">{{ '%.2f' | format(correct.value/total.value * 100) }}</div>
+        <div class="large-2 small-12 cell text-center">
+          <p>Contractions</p>
+          <div class="stat">{{ contractions_count.value }}</div>
+        </div>
+        <div class="large-2 small-12 cell text-center">
+          <p>Misspellings</p>
+          <div class="stat">{{ misspellings_count.value }}</div>
+        </div>
+        <div class="large-2 small-12 cell text-center">
+          <p>Repeating Characters</p>
+          <div class="stat">{{ repeating_characters_count.value }}</div>
+        </div>
+        <div class="large-2 small-12 cell text-center">
+          <p>Repeating Units</p>
+          <div class="stat">{{ repeating_units_count.value }}</div>
         </div>
       </div>
       <hr>
+      {# End #}
+
+      {% macro stats(total, tp, fp, tn) %}
+      {# Accuracy #}
+      <div class="grid-x align-center">
+        {% set accuracy = namespace() %}
+        {% set percentage_error = namespace() %}
+        {% set percentage_error.value = safe_division((total.value-tp.value), total.value) * 100 %}
+        {% set accuracy.value = 100 - percentage_error.value %}
+        <div class="large-3 small-12 cell text-center">
+          <p><abbr title="Number of informal words">Total</abbr></p>
+          <div class="stat">{{ total.value }}</div>
+        </div>
+        <div class="large-3 small-12 cell text-center">
+          <p><abbr title="Correctly normalized informal words">Correct</abbr></p>
+          <div class="stat">{{ tp.value }}</div>
+        </div>
+        <div class="large-3 small-12 cell text-center">
+          <p>Accuracy</p>
+          <div class="stat">{{ '%.2f' | format(accuracy.value) }}</div>
+        </div>
+        <div class="large-3 small-12 cell text-center">
+          <p>Percentage Error</p>
+          <div class="stat">{{ '%.2f' | format(percentage_error.value) }}</div>
+        </div>
+      </div>
+      <hr>
+      {# End #}
+
+      {# Test Statistics #}
+      <div class="grid-x align-center">
+        <div class="large-4 small-12 cell text-center">
+          <p><abbr title="Correctly normalized informal words">True Positive</abbr></p>
+          <div class="stat">{{ tp.value }}</div>
+        </div>
+        <div class="large-4 small-12 cell text-center">
+          <p><abbr title="Incorrectly normalized formal words">False Positive</abbr></p>
+          <div class="stat">{{ fp.value }}</div>
+        </div>
+        <div class="large-4 small-12 cell text-center">
+          <p><abbr title="Incorrectly normalized informal words">True Negative</abbr></p>
+          <div class="stat">{{ tn.value }}</div>
+        </div>
+      </div>
+      <hr>
+      {# End #}
+
+      {# F-Score #}
+      <div class="grid-x align-center">
+        {% set precision = namespace() %}
+        {% set recall = namespace() %}
+        {% set fscore = namespace() %}
+
+        {% set precision.value = safe_division(tp.value, (tp.value+fp.value)) %}
+        {% set recall.value = safe_division(tp.value, (tp.value+tn.value)) %}
+        {% set fscore.value = safe_division(2*precision.value*recall.value,
+                                            (precision.value+recall.value)) * 100 
+        %}
+        <div class="large-4 small-12 cell text-center">
+          <p>Precision</p>
+          <div class="stat">{{ '%.2f' | format(precision.value) }}</div>
+        </div>
+        <div class="large-4 small-12 cell text-center">
+          <p>Recall</p>
+          <div class="stat">{{ '%.2f' | format(recall.value) }}</div>
+        </div>
+        <div class="large-4 small-12 cell text-center">
+          <p>F-Score</p>
+          <div class="stat">{{ '%.2f' | format(fscore.value) }}</div>
+        </div>
+      </div>
+      {% endmacro %}
+      {# End #}
+
+      {# Word-level and Sent-level Accuracy #}
+      <ul class="tabs" data-tabs id="stat-tabs">
+        <li class="tabs-title is-active"><a href="#word-level-stat" aria-selected="true">Word-level Stats</a></li>
+        <li class="tabs-title"><a href="#sent-level-stat" aria-selected="true">Sent-level Stats</a></li>
+      </ul>
+      <div class="tabs-content" data-tabs-content="stat-tabs">
+        <div class="tabs-panel is-active" id="word-level-stat">
+          {{ stats(word_level_total, word_level_tp, word_level_fp, word_level_tn) }}
+        </div>
+        <div class="tabs-panel" id="sent-level-stat">
+          {{ stats(sent_level_total, sent_level_tp, sent_level_fp, word_level_tn) }}
+        </div>
+      </div>
+      <hr>
+      {# End #}
       <button class="button" id="export">Download CSV</button>
     </div>
   </div>

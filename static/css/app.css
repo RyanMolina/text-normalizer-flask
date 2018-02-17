@@ -9,6 +9,14 @@ textarea:disabled.custom-ta {
   background: transparent;
 }
 
+span.false-pos {
+  color: orange !important;
+}
+
+span.true-neg {
+  color: red !important;
+}
+
 #chars {
   margin-top: -1rem;
   color: #aaa;
