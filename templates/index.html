@@ -1,6 +1,13 @@
 {% include 'head.html' %}
 <div class="grid-container">
-  <h2>Test Area</h2>
+  <h1 style="font-family: 'Pacifico', cursive; margin-bottom: 50px;" class="text-center"><abbr title="Tagalog Text Normalization">normalizer</abbr></h1>
+  <!-- <label>Select Model
+    <select>
+      {% for model in models %}
+      <option value="{{ model }}">{{ model }}</option>
+      {% endfor %}
+    </select>
+  </label> -->
   <div class="grid-x grid-margin-x align-center">
     <div class="gap large-6 small-12 cell">
       <span class="label">Input</span>
@@ -13,7 +20,7 @@
     </div>
   </div>
   <hr>
-  <h2>Test the accuracy</h2>
+  <h2>Use test files</h2>
   <div id="accuracy-tester">
     <form id="uploadForm" action="{{ url_for('accuracy_test') }}" method="post" name="upload" class="grid-x align-center grid-margin-x">
       <div class="large-6 small-12 cell">
@@ -21,7 +28,7 @@
           <label for="enc-upload" class="hollow button">Encoder File</label>
           <input type="file" id="enc-upload" name="enc" class="show-for-sr">
           <input type="hidden" id="enc-data" name="enc-data">
-          <span id="enc-filename">No file selected</span>
+          <span style="margin-left: 16px;" id="enc-filename">No file selected</span>
           <a href="#" role="button" id="cancel-enc-file" class="cancel-btn">Cancel</a>
         </div>
       </div>
@@ -30,7 +37,7 @@
           <label for="dec-upload" class="hollow button">Decoder File</label>
           <input type="file" id="dec-upload" name="dec" class="show-for-sr">
           <input type="hidden" id="dec-data" name="dec-data">
-          <span id="dec-filename">No file selected</span>
+          <span style="margin-left: 16px;" id="dec-filename">No file selected</span>
           <a href="#" role="button" id="cancel-dec-file" class="cancel-btn">Cancel</a>
         </div>
       </div>
