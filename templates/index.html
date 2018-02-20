@@ -1,27 +1,38 @@
 {% include 'head.html' %}
 <div class="grid-container">
-  <div class="grid-x align-center">
-    <div class="large-6 small-12 cell">
+  <h2>Test Area</h2>
+  <div class="grid-x grid-margin-x align-center">
+    <div class="gap large-6 small-12 cell">
+      <span class="label">Input</span>
       <textarea maxlength="280" id="encoded" class="custom-ta" placeholder="Enter Text"></textarea>
       <span id="chars" class="float-right">0/280</span>
     </div>
     <div class="large-6 small-12 cell">
+      <span class="label">Output</span>
       <textarea maxlength="280" id="decoded" disabled class="custom-ta"></textarea>
     </div>
   </div>
+  <hr>
+  <h2>Test the accuracy</h2>
   <div id="accuracy-tester">
-    <form id="uploadForm" action="{{ url_for('accuracy_test') }}" method="post" name="upload" class="grid-x align-center">
-      <div class="large-6 small-12 cell text-center">
-        <label for="enc-upload" class="hollow button">Encoder File</label>
-        <input type="file" id="enc-upload" name="enc" class="show-for-sr">
-        <input type="hidden" id="enc-data" name="enc-data">
-        <p id="enc-filename">No file selected</p>
+    <form id="uploadForm" action="{{ url_for('accuracy_test') }}" method="post" name="upload" class="grid-x align-center grid-margin-x">
+      <div class="large-6 small-12 cell">
+        <div class="callout">
+          <label for="enc-upload" class="hollow button">Encoder File</label>
+          <input type="file" id="enc-upload" name="enc" class="show-for-sr">
+          <input type="hidden" id="enc-data" name="enc-data">
+          <span id="enc-filename">No file selected</span>
+          <a href="#" role="button" id="cancel-enc-file" class="cancel-btn">Cancel</a>
+        </div>
       </div>
-      <div class="large-6 small-12 cell text-center">
-        <label for="dec-upload" class="hollow button">Decoder File</label>
-        <input type="file" id="dec-upload" name="dec" class="show-for-sr">
-        <input type="hidden" id="dec-data" name="dec-data">
-        <p id="dec-filename">No file selected</p>
+      <div class="large-6 small-12 cell">
+        <div class="callout">
+          <label for="dec-upload" class="hollow button">Decoder File</label>
+          <input type="file" id="dec-upload" name="dec" class="show-for-sr">
+          <input type="hidden" id="dec-data" name="dec-data">
+          <span id="dec-filename">No file selected</span>
+          <a href="#" role="button" id="cancel-dec-file" class="cancel-btn">Cancel</a>
+        </div>
       </div>
       <button type="submit" id="normalize" class="button float-center">Normalize</button>
     </form>

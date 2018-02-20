@@ -1,5 +1,5 @@
 $(document).ready(function($) {
-
+    $('.custom-ta').val('')
     $('#normalize').hide()
     $('#results-table').insertAfter($('#accuracy'))
 
@@ -25,8 +25,6 @@ $(document).ready(function($) {
         }
     });
 
-    
-
     $('#export').click(function() {
         var csv_value = $('#results-table').table2CSV({
             header:['No', 'Input', 'Expected', 'Result'],
@@ -44,7 +42,6 @@ $(document).ready(function($) {
         document.body.removeChild(downloadLink);
     });
 
-
     var encFile = ""
     var decFile = ""
 
@@ -60,8 +57,8 @@ $(document).ready(function($) {
         readDecText(decFile)
     })
 
-    function checkFiles() {
-        if ($('#dec-data').val().length !== 0 && $('#enc-data').val().length !== 0) {
+    function toggleNormalizeButton() {
+        if (encFile.length !== 0 && decFile.length !== 0) {
             $('#normalize').show()
         } else {
             $('#normalize').hide()
@@ -74,7 +71,7 @@ $(document).ready(function($) {
         reader.onload = (function (f) {
             return function(e) {
                 $('#enc-data').val(e.target.result)
-                checkFiles()
+                toggleNormalizeButton()
             };
         })(file);
         reader.readAsText(file);
@@ -86,7 +83,7 @@ $(document).ready(function($) {
         reader.onload = (function (f) {
             return function(e) {
                 $('#dec-data').val(e.target.result)
-                checkFiles()
+                toggleNormalizeButton()
             };
         })(file);
         reader.readAsText(file);
@@ -99,10 +96,22 @@ $(document).ready(function($) {
             data: {'src': text},
             success: function(data) {
                 if($('#encoded').val() !== "") {
-                    $("#decoded").html(data['tgt'])
+                    $("#decoded").val(data['tgt'])
                 }
             }
         });
     } 
+
+    $('#cancel-dec-file').click(function() {
+        $('#dec-filename').html('No file selected')
+        decFile = ""
+        toggleNormalizeButton()
+    });
+
+    $('#cancel-enc-file').click(function() {
+        $('#enc-filename').html('No file selected')
+        encFile = ''
+        toggleNormalizeButton()
+    });
 
 });
