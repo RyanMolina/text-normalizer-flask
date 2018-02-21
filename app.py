@@ -129,7 +129,7 @@ def accuracy_test():
             enc_content = enc.splitlines()
             dec_content = dec.splitlines()
 
-        for i, e in enumerate(enc_content[:5]):
+        for i, e in enumerate(enc_content):
             if e:
                 result = {'enc': e.strip().strip('\n'),
                           'dec': dec_content[i].strip().strip('\n'),
@@ -151,12 +151,12 @@ def readlines(filename):
 if __name__ == '__main__':
     ARGS = serve.parse_args()
     tagged_words = {}
-    tagged_words.update({row: 'accent_styles' for row in readlines(os.path.join('normalizer', 'testing', 'accent_style.dic'))})
-    tagged_words.update({row: 'phonetic_styles' for row in readlines(os.path.join('normalizer', 'testing', 'phonetic_style.dic'))})
-    tagged_words.update({row: 'contractions' for row in readlines(os.path.join('normalizer', 'testing', 'contractions.dic'))})
-    tagged_words.update({row: 'misspellings' for row in readlines(os.path.join('normalizer', 'testing', 'misspelling.dic'))})
-    tagged_words.update({row: 'repeating_characters' for row in readlines(os.path.join('normalizer', 'testing', 'repeating_characters.dic'))})
-    tagged_words.update({row: 'repeating_units' for row in readlines(os.path.join('normalizer', 'testing', 'repeating_units.dic'))})
+    # tagged_words.update({row: 'accent_styles' for row in readlines(os.path.join('normalizer', 'testing', 'accent_style.dic'))})
+    # tagged_words.update({row: 'phonetic_styles' for row in readlines(os.path.join('normalizer', 'testing', 'phonetic_style.dic'))})
+    # tagged_words.update({row: 'contractions' for row in readlines(os.path.join('normalizer', 'testing', 'contractions.dic'))})
+    # tagged_words.update({row: 'misspellings' for row in readlines(os.path.join('normalizer', 'testing', 'misspelling.dic'))})
+    # tagged_words.update({row: 'repeating_characters' for row in readlines(os.path.join('normalizer', 'testing', 'repeating_characters.dic'))})
+    # tagged_words.update({row: 'repeating_units' for row in readlines(os.path.join('normalizer', 'testing', 'repeating_units.dic'))})
     with tf.Session() as sess:
         NORMALIZER = serve.Serve(sess=sess,
                                  model_name=ARGS.model_name,

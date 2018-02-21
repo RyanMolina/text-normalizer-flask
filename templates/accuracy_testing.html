@@ -100,6 +100,7 @@
       {# Informal words count #}
       <div class="grid-x align-center">
         <h1 class="cell text-center">Analysis</h1>
+        {% if tagged_words %}
         <div class="large-2 small-12 cell text-center">
           <p>Accent Style</p>
           <div class="stat">{{ accent_styles_count.value }}</div>
@@ -124,6 +125,7 @@
           <p>Repeating Units</p>
           <div class="stat">{{ repeating_units_count.value }}</div>
         </div>
+        {% endif %}
       </div>
       <hr>
       {# End #}
