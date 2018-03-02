@@ -75,8 +75,7 @@
         {% set word_level_total.value = word_level_total.value
                                         + errors.value[1].fp
                                         + errors.value[1].tp
-                                        + errors.value[1].tn
-        %}
+                                        + errors.value[1].tn %}
 
         {% if e['enc'] == e['dec'] != e['res'] %}
           {% set sent_level_fp.value = sent_level_fp.value + 1 %}
@@ -85,7 +84,7 @@
         {% else %}
           {% set sent_level_tn.value = sent_level_tn.value + 1 %}
         {% endif %}
-
+        
         <tr>
           <td>{{ loop.index }}</td>
           <td>{{ e['enc'] }}</td>
@@ -95,7 +94,9 @@
       {% endfor %}
       </tbody>
     </table>
-
+    {% for i in word_count %}
+      <p>i</p>
+    {% endfor %}
     <div id="accuracy">
       {# Informal words count #}
       <div class="grid-x align-center">

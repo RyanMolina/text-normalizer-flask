@@ -14,19 +14,6 @@ APP = Flask(__name__)
 
 APP.jinja_env.add_extension('jinja2.ext.loopcontrols')
 
-@APP.route('/normalize/api', methods=['POST'])
-def normalize():
-    """The route for REST API which returns the normalized input.
-    Decorators:
-        APP
-    Returns:
-        json: contains the input and the normalized output
-    """
-    src = request.form['src']
-    output = NORMALIZER.model_api(src)
-    return jsonify({'src': src, 'tgt': output})
-
-
 @APP.errorhandler(404)
 def url_error(error):
     """Returns the error message for wrong URL.
@@ -60,13 +47,24 @@ def server_error(error):
     """.format(error), 500
 
 
+@APP.route('/normalize/api', methods=['POST'])
+def normalize():
+    """The route for REST API which returns the normalized input.
+    Decorators:
+        APP
+    Returns:
+        json: contains the input and the normalized output
+    """
+    src = request.form['src']
+    output = NORMALIZER.model_api(src)
+    return jsonify({'src': src, 'tgt': output})
+
+
 @APP.context_processor
 def find_errors():
     """Returns highlighted text if doesn't match"""
     def _compare(enc, dec, res):
-        print(res)
         diff, test_statistics = simplediff.check_errors(enc=enc, dec=dec, res=res)
-        print(test_statistics)
         return (Markup(diff), test_statistics)
     return dict(highlight_incorrect=_compare)
 
@@ -136,10 +134,11 @@ def accuracy_test():
                           'res': NORMALIZER.model_api(e.strip().strip('\n'))
                          }
                 yield result
-
+    word_count = {}
     return Response(stream_with_context(
         stream_template('accuracy_testing.html', rows=generate(),
-                                                 tagged_words=tagged_words)))
+                                                 tagged_words=tagged_words,
+                                                 word_count=word_count)))
 
 
 def readlines(filename):
