@@ -148,15 +148,33 @@ def readlines(filename):
     return rows
 
 
+def set_tag(tag, words):
+    return {word: tag for word in words}
+
+
 if __name__ == '__main__':
     ARGS = serve.parse_args()
     tagged_words = {}
-    # tagged_words.update({row: 'accent_styles' for row in readlines(os.path.join('normalizer', 'testing', 'accent_style.dic'))})
-    # tagged_words.update({row: 'phonetic_styles' for row in readlines(os.path.join('normalizer', 'testing', 'phonetic_style.dic'))})
-    # tagged_words.update({row: 'contractions' for row in readlines(os.path.join('normalizer', 'testing', 'contractions.dic'))})
-    # tagged_words.update({row: 'misspellings' for row in readlines(os.path.join('normalizer', 'testing', 'misspelling.dic'))})
-    # tagged_words.update({row: 'repeating_characters' for row in readlines(os.path.join('normalizer', 'testing', 'repeating_characters.dic'))})
-    # tagged_words.update({row: 'repeating_units' for row in readlines(os.path.join('normalizer', 'testing', 'repeating_units.dic'))})
+    testing_path = os.path.join('normalizer', 'testing')
+
+    tagged_words.update(set_tag('phonetic_style', readlines(os.path.join(
+        testing_path, 'phonetic_style.dic'))))
+
+    tagged_words.update(set_tag('accent_style', readlines(os.path.join(
+        testing_path, 'accent_style.dic'))))
+
+    tagged_words.update(set_tag('contractions', readlines(os.path.join(
+        testing_path, 'contractions.dic'))))
+
+    tagged_words.update(set_tag('misspellings', readlines(os.path.join(
+        testing_path, 'misspelling.dic'))))
+    
+    tagged_words.update(set_tag('repeating_characters', readlines(os.path.join(
+        testing_path, 'repeating_characters.dic'))))
+
+    tagged_words.update(set_tag('repeating_units', readlines(os.path.join(
+        testing_path, 'repeating_units.dic'))))
+
     with tf.Session() as sess:
         NORMALIZER = serve.Serve(sess=sess,
                                  model_name=ARGS.model_name,
