@@ -9,7 +9,6 @@ from flask import (Flask, render_template, jsonify, Response,
 from normalizer import serve
 from normalizer.utils import simplediff
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 APP = Flask(__name__)
 
 APP.jinja_env.add_extension('jinja2.ext.loopcontrols')
@@ -152,14 +151,15 @@ def set_tag(tag, words):
 
 
 if __name__ == '__main__':
+    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
     ARGS = serve.parse_args()
     tagged_words = {}
     testing_path = os.path.join('normalizer', 'testing')
 
-    tagged_words.update(set_tag('phonetic_style', readlines(os.path.join(
+    tagged_words.update(set_tag('phonetic_styles', readlines(os.path.join(
         testing_path, 'phonetic_style.dic'))))
 
-    tagged_words.update(set_tag('accent_style', readlines(os.path.join(
+    tagged_words.update(set_tag('accent_styles', readlines(os.path.join(
         testing_path, 'accent_style.dic'))))
 
     tagged_words.update(set_tag('contractions', readlines(os.path.join(
