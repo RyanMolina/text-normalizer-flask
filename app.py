@@ -178,6 +178,7 @@ if __name__ == '__main__':
     with tf.Session() as sess:
         NORMALIZER = serve.Serve(sess=sess,
                                  model_name=ARGS.model_name,
+                                 dataset_name=ARGS.dataset_name,
                                  checkpoint=ARGS.checkpoint,
                                  char_emb=ARGS.char_emb)
         APP.run(debug=True, use_reloader=True)
