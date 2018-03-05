@@ -62,8 +62,9 @@ def normalize():
 @APP.context_processor
 def find_errors():
     """Returns highlighted text if doesn't match"""
-    def _compare(enc, dec, res):
-        diff, test_statistics = simplediff.check_errors(enc=enc, dec=dec, res=res)
+    def _compare(enc, dec, res, tagged_words):
+        diff, test_statistics = simplediff.check_errors(
+            enc=enc, dec=dec, res=res, tagged_words=tagged_words)
         return (Markup(diff), test_statistics)
     return dict(highlight_incorrect=_compare)
 

@@ -67,7 +67,7 @@
         {% endfor %}
         
         {% set errors = namespace() %}
-        {% set errors.value = highlight_incorrect(e['enc'], e['dec'], e['res']) %}
+        {% set errors.value = highlight_incorrect(e['enc'], e['dec'], e['res'], tagged_words) %}
 
         {% set word_level_fp.value = word_level_fp.value + errors.value[1].fp %}
         {% set word_level_tp.value = word_level_tp.value + errors.value[1].tp %}
