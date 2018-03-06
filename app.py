@@ -152,8 +152,9 @@ def set_tag(tag, words):
 
 
 if __name__ == '__main__':
-    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
     ARGS = serve.parse_args()
+    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
     tagged_words = {}
     testing_path = os.path.join('normalizer', 'testing')
 
