@@ -7,12 +7,15 @@
     {% set word_level_fp = namespace() %}
     {% set word_level_tp = namespace() %}
     {% set word_level_tn = namespace() %}
+    {% set word_level_tn.value = 0 %}
     {% set word_level_fp.value = 0 %}
     {% set word_level_tp.value = 0 %}
-    {% set word_level_tn.value = 0 %}
-  
+         
+    {% set errors = namespace() %}
+
     {% set sent_level_total = namespace() %}
     {% set sent_level_total.value = 0 %}
+
     {% set sent_level_fp = namespace() %}
     {% set sent_level_tn = namespace() %}
     {% set sent_level_tp = namespace() %}
@@ -20,19 +23,36 @@
     {% set sent_level_tn.value = 0 %}
     {% set sent_level_tp.value = 0 %}
 
-    {% set accent_styles_count = namespace() %}
-    {% set phonetic_styles_count = namespace() %}
-    {% set contractions_count = namespace() %}
-    {% set misspellings_count = namespace() %}
-    {% set repeating_characters_count = namespace() %}
-    {% set repeating_units_count = namespace() %}
+    {% set accent_styles_normalized = namespace() %}
+    {% set phonetic_styles_normalized = namespace() %}
+    {% set contractions_normalized = namespace() %}
+    {% set misspellings_normalized = namespace() %}
+    {% set repeating_characters_normalized = namespace() %}
+    {% set repeating_units_normalized = namespace() %}
+    {% set accent_styles_total = namespace() %}
+    {% set phonetic_styles_total = namespace() %}
+    {% set contractions_total = namespace() %}
+    {% set misspellings_total = namespace() %}
+    {% set repeating_characters_total = namespace() %}
+    {% set repeating_units_total = namespace() %}
 
-    {% set accent_styles_count.value = 0 %}
-    {% set phonetic_styles_count.value = 0 %}
-    {% set contractions_count.value = 0 %}
-    {% set misspellings_count.value = 0 %}
-    {% set repeating_characters_count.value = 0 %}
-    {% set repeating_units_count.value = 0 %}
+    {% set accent_styles_normalized.value = 0 %}
+    {% set accent_styles_total.value = 0 %}
+    {% set phonetic_styles_total.value = 0 %}
+    {% set phonetic_styles_normalized.value = 0 %}
+    {% set misspellings_normalized.value = 0 %}
+    {% set misspellings_total.value = 0 %}
+    {% set contractions_normalized.value = 0 %}
+    {% set contractions_total.value = 0 %}
+    {% set repeating_characters_normalized.value = 0 %}
+    {% set repeating_characters_total.value = 0 %}
+    {% set repeating_units_normalized.value = 0 %}
+    {% set repeating_units_total.value = 0 %}
+
+    {% set informal_words_total = namespace() %}
+    {% set informal_words_normalized = namespace() %}
+    {% set informal_words_total.value = 0 %}
+    {% set informal_words_normalized.value = 0 %}
 
     <table id="results-table" class="stack">
       <thead>
@@ -47,35 +67,47 @@
       {% for e in rows %}
         {% set sent_level_total.value = loop.index %}
         {% set enc_words = e['enc'].split() %}
+
         {% for word in enc_words %}
-          {% set tag = tagged_words.get(word) %}
+          {% set tag = tagged_words.get(word | lower) %}
           {% if tag == 'accent_styles' %}
-            {% set accent_styles_count.value = accent_styles_count.value + 1 %}
+            {% set accent_styles_total.value = accent_styles_total.value + 1 %}
           {% elif tag == 'phonetic_styles' %}
-            {% set phonetic_styles_count.value = phonetic_styles_count.value + 1 %}
+            {% set phonetic_styles_total.value = phonetic_styles_total.value + 1 %}
           {% elif tag == 'contractions' %}
-            {% set contractions_count.value = contractions_count.value + 1 %}
+            {% set contractions_total.value = contractions_total.value + 1 %}
           {% elif tag == 'misspellings' %}
-            {% set misspellings_count.value = misspellings_count.value + 1 %}
+            {% set misspellings_total.value = misspellings_total.value + 1 %}
           {% elif tag == 'repeating_characters' %}
-            {% set repeating_characters_count.value = repeating_characters_count.value + 1 %}
+            {% set repeating_characters_total.value = repeating_characters_total.value + 1 %}
           {% elif tag == 'repeating_units' %}
-            {% set repeating_units_count.value = repeating_units_count.value + 1 %}
-          {% else %}
-            {% set misspellings_count.value = misspellings_count.value + 1 %}
+            {% set repeating_units_total.value = repeating_units_total.value + 1 %}
           {% endif %}
         {% endfor %}
-        
-        {% set errors = namespace() %}
+
         {% set errors.value = highlight_incorrect(e['enc'], e['dec'], e['res'], tagged_words) %}
 
-        {% set word_level_fp.value = word_level_fp.value + errors.value[1].fp %}
-        {% set word_level_tp.value = word_level_tp.value + errors.value[1].tp %}
-        {% set word_level_tn.value = word_level_tn.value + errors.value[1].tn %}
+        {% set accent_styles_normalized.value = accent_styles_normalized.value
+                            + errors.value['tags_normalized']['accent_styles'] %}
+        {% set phonetic_styles_normalized.value = phonetic_styles_normalized.value
+                            + errors.value['tags_normalized']['phonetic_styles'] %}
+        {% set contractions_normalized.value = contractions_normalized.value 
+                            + errors.value['tags_normalized']['contractions'] %}
+        {% set misspellings_normalized.value = misspellings_normalized.value 
+                            + errors.value['tags_normalized']['misspellings'] %}
+        {% set repeating_characters_normalized.value = repeating_characters_normalized.value 
+                            + errors.value['tags_normalized']['repeating_characters'] %}
+        {% set repeating_units_normalized.value = repeating_units_normalized.value 
+                            + errors.value['tags_normalized']['repeating_units'] %}
+
+        {% set word_level_fp.value = word_level_fp.value + errors.value['test_stats'].fp %}
+        {% set word_level_tp.value = word_level_tp.value + errors.value['test_stats'].tp %}
+        {% set word_level_tn.value = word_level_tn.value + errors.value['test_stats'].tn %}
+
         {% set word_level_total.value = word_level_total.value
-                                        + errors.value[1].fp
-                                        + errors.value[1].tp
-                                        + errors.value[1].tn %}
+                                        + errors.value['test_stats'].fp
+                                        + errors.value['test_stats'].tp
+                                        + errors.value['test_stats'].tn %}
 
         {% if e['enc'] == e['dec'] != e['res'] %}
           {% set sent_level_fp.value = sent_level_fp.value + 1 %}
@@ -87,46 +119,63 @@
         
         <tr>
           <td>{{ loop.index }}</td>
-          <td>{{ e['enc'] }}</td>
+          <td>{{ errors.value['tagged_enc'] }}</td>
           <td>{{ e['dec'] }}</td>
-          <td>{{ errors.value[0] }}</td>
+          <td>{{ errors.value['highlighted'] }}</td>
         </tr>
       {% endfor %}
       </tbody>
     </table>
-    {% for i in word_count %}
-      <p>i</p>
-    {% endfor %}
     <div id="accuracy">
       {# Informal words count #}
+      {% set informal_words_total.value = accent_styles_total.value
+                                        + phonetic_styles_total.value
+                                        + misspellings_total.value
+                                        + repeating_characters_total.value
+                                        + repeating_units_total.value
+                                        + contractions_total.value %}
+      {% set informal_words_normalized.value = accent_styles_normalized.value 
+                                        + phonetic_styles_normalized.value 
+                                        + misspellings_normalized.value 
+                                        + repeating_characters_normalized.value 
+                                        + repeating_units_normalized.value 
+                                        + contractions_normalized.value %}
       <div class="grid-x align-center">
-        <h1 class="cell text-center">Analysis</h1>
-        {% if tagged_words %}
+        <div class="large-6 small-12 cell text-center">
+          <p>Total Informal Words</p>
+          <div class="stat">{{ informal_words_total.value }}</div>
+        </div>
+        <div class="large-6 small-12 cell text-center">
+          <p>Corrected Informal Words</p>
+          <div class="stat">{{ informal_words_normalized.value }}</div>
+        </div>
+      </div>
+      <hr>
+      <div class="grid-x align-center">
         <div class="large-2 small-12 cell text-center">
           <p>Accent Style</p>
-          <div class="stat">{{ accent_styles_count.value }}</div>
+          <div class="stat">{{ accent_styles_normalized.value }} / {{ accent_styles_total.value }}</div>
         </div>
         <div class="large-2 small-12 cell text-center">
           <p>Phonetic Style</p>
-          <div class="stat">{{ phonetic_styles_count.value }}</div>
+          <div class="stat">{{ phonetic_styles_normalized.value }} / {{ phonetic_styles_total.value }}</div>
         </div>
         <div class="large-2 small-12 cell text-center">
           <p>Contractions</p>
-          <div class="stat">{{ contractions_count.value }}</div>
+          <div class="stat">{{ contractions_normalized.value }} / {{ contractions_total.value }}</div>
         </div>
         <div class="large-2 small-12 cell text-center">
           <p>Misspellings</p>
-          <div class="stat">{{ misspellings_count.value }}</div>
+          <div class="stat">{{ misspellings_normalized.value }} / {{ misspellings_total.value }}</div>
         </div>
         <div class="large-2 small-12 cell text-center">
           <p>Repeating Characters</p>
-          <div class="stat">{{ repeating_characters_count.value }}</div>
+          <div class="stat">{{ repeating_characters_normalized.value }} / {{ repeating_characters_total.value }}</div>
         </div>
         <div class="large-2 small-12 cell text-center">
           <p>Repeating Units</p>
-          <div class="stat">{{ repeating_units_count.value }}</div>
+          <div class="stat">{{ repeating_units_normalized.value }} / {{ repeating_units_total.value }}</div>
         </div>
-        {% endif %}
       </div>
       <hr>
       {# End #}
@@ -136,15 +185,19 @@
       <div class="grid-x align-center">
         {% set accuracy = namespace() %}
         {% set percentage_error = namespace() %}
-        {% set percentage_error.value = safe_division((total.value-tp.value), total.value) * 100 %}
+        {# {% set percentage_error.value = safe_division((total.value-tp.value), total.value) * 100 %} #}
+        {% set percentage_error.value = safe_division((informal_words_total.value - informal_words_normalized.value),
+                                            informal_words_total.value) * 100 %}
         {% set accuracy.value = 100 - percentage_error.value %}
         <div class="large-3 small-12 cell text-center">
           <p><abbr title="Number of informal words">Total</abbr></p>
-          <div class="stat">{{ total.value }}</div>
+          <div class="stat">{{ informal_words_total.value }}</div> 
+          {# <div class="stat">{{ total.value }}</div> #}
         </div>
         <div class="large-3 small-12 cell text-center">
-          <p><abbr title="Correctly normalized informal words">Correct</abbr></p>
-          <div class="stat">{{ tp.value }}</div>
+          <p><abbr title="Correctly normalized words">Correct</abbr></p>
+          <div class="stat">{{ informal_words_normalized.value }}</div>
+          {# <div class="stat">{{ tp.value }}</div> #}
         </div>
         <div class="large-3 small-12 cell text-center">
           <p>Accuracy</p>
@@ -185,8 +238,7 @@
         {% set precision.value = safe_division(tp.value, (tp.value+fp.value)) %}
         {% set recall.value = safe_division(tp.value, (tp.value+tn.value)) %}
         {% set fscore.value = safe_division(2*precision.value*recall.value,
-                                            (precision.value+recall.value)) * 100 
-        %}
+                                            (precision.value+recall.value)) %}
         <div class="large-4 small-12 cell text-center">
           <p>Precision</p>
           <div class="stat">{{ '%.2f' | format(precision.value) }}</div>

@@ -63,9 +63,9 @@ def normalize():
 def find_errors():
     """Returns highlighted text if doesn't match"""
     def _compare(enc, dec, res, tagged_words):
-        diff, test_statistics = simplediff.check_errors(
+        diff, test_statistics, tagged_enc, tags_count = simplediff.check_errors(
             enc=enc, dec=dec, res=res, tagged_words=tagged_words)
-        return (Markup(diff), test_statistics)
+        return {'highlighted': Markup(diff), 'test_stats': test_statistics, 'tags_count': tags_count, 'tagged_enc': Markup(tagged_enc)}
     return dict(highlight_incorrect=_compare)
 
 
@@ -127,18 +127,15 @@ def accuracy_test():
             enc_content = enc.splitlines()
             dec_content = dec.splitlines()
 
-        for i, e in enumerate(enc_content):
+        for i, e in enumerate(enc_content[:10]):
             if e:
                 result = {'enc': e.strip().strip('\n'),
                           'dec': dec_content[i].strip().strip('\n'),
-                          'res': NORMALIZER.model_api(e.strip().strip('\n'))
-                         }
+                          'res': NORMALIZER.model_api(e.strip().strip('\n'))}
                 yield result
-    word_count = {}
     return Response(stream_with_context(
         stream_template('accuracy_testing.html', rows=generate(),
-                                                 tagged_words=tagged_words,
-                                                 word_count=word_count)))
+                                                 tagged_words=tagged_words)))
 
 
 def readlines(filename):
