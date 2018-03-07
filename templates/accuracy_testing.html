@@ -13,16 +13,6 @@
          
     {% set errors = namespace() %}
 
-    {% set sent_level_total = namespace() %}
-    {% set sent_level_total.value = 0 %}
-
-    {% set sent_level_fp = namespace() %}
-    {% set sent_level_tn = namespace() %}
-    {% set sent_level_tp = namespace() %}
-    {% set sent_level_fp.value = 0 %}
-    {% set sent_level_tn.value = 0 %}
-    {% set sent_level_tp.value = 0 %}
-
     {% set accent_styles_normalized = namespace() %}
     {% set phonetic_styles_normalized = namespace() %}
     {% set contractions_normalized = namespace() %}
@@ -65,7 +55,6 @@
       </thead>
       <tbody>
       {% for e in rows %}
-        {% set sent_level_total.value = loop.index %}
         {% set enc_words = e['enc'].split() %}
 
         {% for word in enc_words %}
@@ -88,35 +77,27 @@
         {% set errors.value = highlight_incorrect(e['enc'], e['dec'], e['res'], tagged_words) %}
 
         {% set accent_styles_normalized.value = accent_styles_normalized.value
-                            + errors.value['tags_normalized']['accent_styles'] %}
+                            + errors.value['tags_count']['accent_styles']['tp'] %}
         {% set phonetic_styles_normalized.value = phonetic_styles_normalized.value
-                            + errors.value['tags_normalized']['phonetic_styles'] %}
+                            + errors.value['tags_count']['phonetic_styles']['tp'] %}
         {% set contractions_normalized.value = contractions_normalized.value 
-                            + errors.value['tags_normalized']['contractions'] %}
+                            + errors.value['tags_count']['contractions']['tp'] %}
         {% set misspellings_normalized.value = misspellings_normalized.value 
-                            + errors.value['tags_normalized']['misspellings'] %}
+                            + errors.value['tags_count']['misspellings']['tp'] %}
         {% set repeating_characters_normalized.value = repeating_characters_normalized.value 
-                            + errors.value['tags_normalized']['repeating_characters'] %}
+                            + errors.value['tags_count']['repeating_characters']['tp'] %}
         {% set repeating_units_normalized.value = repeating_units_normalized.value 
-                            + errors.value['tags_normalized']['repeating_units'] %}
+                            + errors.value['tags_count']['repeating_units']['tp'] %}
 
         {% set word_level_fp.value = word_level_fp.value + errors.value['test_stats'].fp %}
         {% set word_level_tp.value = word_level_tp.value + errors.value['test_stats'].tp %}
         {% set word_level_tn.value = word_level_tn.value + errors.value['test_stats'].tn %}
 
         {% set word_level_total.value = word_level_total.value
-                                        + errors.value['test_stats'].fp
-                                        + errors.value['test_stats'].tp
-                                        + errors.value['test_stats'].tn %}
-
-        {% if e['enc'] == e['dec'] != e['res'] %}
-          {% set sent_level_fp.value = sent_level_fp.value + 1 %}
-        {% elif e['dec'] == e['res'] %}
-          {% set sent_level_tp.value = sent_level_tp.value + 1 %}
-        {% else %}
-          {% set sent_level_tn.value = sent_level_tn.value + 1 %}
-        {% endif %}
-        
+                                      + errors.value['test_stats'].fp
+                                      + errors.value['test_stats'].tp
+                                      + errors.value['test_stats'].tn %}
+ 
         <tr>
           <td>{{ loop.index }}</td>
           <td>{{ errors.value['tagged_enc'] }}</td>
@@ -134,24 +115,33 @@
                                         + repeating_characters_total.value
                                         + repeating_units_total.value
                                         + contractions_total.value %}
+
       {% set informal_words_normalized.value = accent_styles_normalized.value 
                                         + phonetic_styles_normalized.value 
                                         + misspellings_normalized.value 
                                         + repeating_characters_normalized.value 
                                         + repeating_units_normalized.value 
                                         + contractions_normalized.value %}
-      <div class="grid-x align-center">
-        <div class="large-6 small-12 cell text-center">
+     <!-- <div class="grid-x align-center">
+        <div class="large-3 small-12 cell text-center">
+          <p>Total Words</p>
+          <div class="stat">{{ word_level_total.value }}</div>
+        </div>
+        <div class="large-3 small-12 cell text-center">
           <p>Total Informal Words</p>
           <div class="stat">{{ informal_words_total.value }}</div>
         </div>
-        <div class="large-6 small-12 cell text-center">
-          <p>Corrected Informal Words</p>
+        <div class="large-3 small-12 cell text-center">
+          <p>Total Formal Words</p>
+          <div class="stat">{{ word_level_total.value - informal_words_total.value }}</div>
+        </div>
+        <div class="large-3 small-12 cell text-center">
+          <p>Normalized Words</p>
           <div class="stat">{{ informal_words_normalized.value }}</div>
         </div>
       </div>
-      <hr>
-      <div class="grid-x align-center">
+      <hr> -->
+      <!--<div class="grid-x align-center">
         <div class="large-2 small-12 cell text-center">
           <p>Accent Style</p>
           <div class="stat">{{ accent_styles_normalized.value }} / {{ accent_styles_total.value }}</div>
@@ -177,27 +167,23 @@
           <div class="stat">{{ repeating_units_normalized.value }} / {{ repeating_units_total.value }}</div>
         </div>
       </div>
-      <hr>
+      <hr> -->
       {# End #}
 
-      {% macro stats(total, tp, fp, tn) %}
+      {% macro stats(tp, fp, tn, f_score) %}
       {# Accuracy #}
       <div class="grid-x align-center">
         {% set accuracy = namespace() %}
         {% set percentage_error = namespace() %}
-        {# {% set percentage_error.value = safe_division((total.value-tp.value), total.value) * 100 %} #}
-        {% set percentage_error.value = safe_division((informal_words_total.value - informal_words_normalized.value),
-                                            informal_words_total.value) * 100 %}
+        {% set percentage_error.value = safe_division(tn, tn+tp) * 100 %}
         {% set accuracy.value = 100 - percentage_error.value %}
         <div class="large-3 small-12 cell text-center">
           <p><abbr title="Number of informal words">Total</abbr></p>
-          <div class="stat">{{ informal_words_total.value }}</div> 
-          {# <div class="stat">{{ total.value }}</div> #}
+          <div class="stat">{{ tn+tp+fp }}</div>
         </div>
         <div class="large-3 small-12 cell text-center">
           <p><abbr title="Correctly normalized words">Correct</abbr></p>
-          <div class="stat">{{ informal_words_normalized.value }}</div>
-          {# <div class="stat">{{ tp.value }}</div> #}
+          <div class="stat">{{ tp }}</div>
         </div>
         <div class="large-3 small-12 cell text-center">
           <p>Accuracy</p>
@@ -212,31 +198,32 @@
       {# End #}
 
       {# Test Statistics #}
+      {% if f_score %}
       <div class="grid-x align-center">
         <div class="large-4 small-12 cell text-center">
           <p><abbr title="Correctly normalized informal words">True Positive</abbr></p>
-          <div class="stat">{{ tp.value }}</div>
+          <div class="stat">{{ tp }}</div>
         </div>
         <div class="large-4 small-12 cell text-center">
           <p><abbr title="Incorrectly normalized formal words">False Positive</abbr></p>
-          <div class="stat">{{ fp.value }}</div>
+          <div class="stat">{{ fp }}</div>
         </div>
         <div class="large-4 small-12 cell text-center">
           <p><abbr title="Incorrectly normalized informal words">True Negative</abbr></p>
-          <div class="stat">{{ tn.value }}</div>
+          <div class="stat">{{ tn }}</div>
         </div>
       </div>
       <hr>
       {# End #}
 
       {# F-Score #}
-      <div class="grid-x align-center">
+    <div class="grid-x align-center">
         {% set precision = namespace() %}
         {% set recall = namespace() %}
         {% set fscore = namespace() %}
 
-        {% set precision.value = safe_division(tp.value, (tp.value+fp.value)) %}
-        {% set recall.value = safe_division(tp.value, (tp.value+tn.value)) %}
+        {% set precision.value = safe_division(tp, (tp+fp)) %}
+        {% set recall.value = safe_division(tp, (tp+tn)) %}
         {% set fscore.value = safe_division(2*precision.value*recall.value,
                                             (precision.value+recall.value)) %}
         <div class="large-4 small-12 cell text-center">
@@ -252,20 +239,53 @@
           <div class="stat">{{ '%.2f' | format(fscore.value) }}</div>
         </div>
       </div>
+      {% endif %}
       {% endmacro %}
       {# End #}
 
       {# Word-level and Sent-level Accuracy #}
       <ul class="tabs" data-tabs id="stat-tabs">
-        <li class="tabs-title is-active"><a href="#word-level-stat" aria-selected="true">Word-level Stats</a></li>
-        <li class="tabs-title"><a href="#sent-level-stat" aria-selected="true">Sent-level Stats</a></li>
+        <li class="tabs-title is-active"><a href="#overall-stat" aria-selected="true">Overall Stats</a></li>
+        <li class="tabs-title"><a href="#accent-styles-stat" aria-selected="true">Accent Styles Stats</a></li>
+        <li class="tabs-title"><a href="#phonetic-styles-stat" aria-selected="true">Phonetic Styles Stats</a></li>
+        <li class="tabs-title"><a href="#contractions-stat" aria-selected="true">Contractions Stats</a></li>
+        <li class="tabs-title"><a href="#repeating-chars-stat" aria-selected="true">Repeating Chars Stats</a></li>
+        <li class="tabs-title"><a href="#repeating-units-stat" aria-selected="true">Repeating Units Stats</a></li>
+        <li class="tabs-title"><a href="#misspellings-stat" aria-selected="true">Misspellings Stats</a></li>
       </ul>
       <div class="tabs-content" data-tabs-content="stat-tabs">
-        <div class="tabs-panel is-active" id="word-level-stat">
-          {{ stats(word_level_total, word_level_tp, word_level_fp, word_level_tn) }}
+        <div class="tabs-panel is-active" id="overall-stat">
+          {{ stats(word_level_tp.value, word_level_fp.value, word_level_tn.value, True) }}
         </div>
-        <div class="tabs-panel" id="sent-level-stat">
-          {{ stats(sent_level_total, sent_level_tp, sent_level_fp, word_level_tn) }}
+        <div class="tabs-panel" id="accent-styles-stat">
+          {{ stats(accent_styles_normalized.value,
+             errors.value['tags_count']['phonetic_styles']['fp'],
+             accent_styles_total.value - accent_styles_normalized.value, False) }}
+        </div>
+        <div class="tabs-panel" id="phonetic-styles-stat">
+          {{ stats(phonetic_styles_normalized.value,
+            errors.value['tags_count']['phonetic_styles']['fp'],
+            phonetic_styles_total.value - phonetic_styles_normalized.value, False) }}
+        </div>
+        <div class="tabs-panel" id="contractions-stat">
+          {{ stats(contractions_normalized.value,
+            errors.value['tags_count']['phonetic_styles']['fp'],
+            contractions_total.value - contractions_normalized.value, False) }}
+        </div>
+        <div class="tabs-panel" id="repeating-chars-stat">
+          {{ stats(repeating_characters_normalized.value,
+            errors.value['tags_count']['phonetic_styles']['fp'],
+            repeating_characters_total.value - repeating_characters_normalized.value, False) }}
+        </div>
+        <div class="tabs-panel" id="repeating-units-stat">
+          {{ stats(repeating_units_normalized.value,
+            errors.value['tags_count']['phonetic_styles']['fp'],
+            repeating_units_total.value - repeating_units_normalized.value, False) }}
+        </div>
+        <div class="tabs-panel" id="misspellings-stat">
+          {{ stats(misspellings_normalized.value,
+            errors.value['tags_count']['phonetic_styles']['fp'],
+            misspellings_total.value - misspellings_normalized.value, False) }}
         </div>
       </div>
       <hr>

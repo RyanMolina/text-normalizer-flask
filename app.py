@@ -80,6 +80,14 @@ def safe_division():
     return dict(safe_division=_divide)
 
 
+@APP.context_processor
+def detokenize():
+    def _detokenize(tokens):
+        return NORMALIZER.detokenizer.detokenize(tokens,
+                                                 return_str=True)
+    return dict(detokenize=_detokenize)
+
+
 @APP.route('/')
 def index():
     """Returns the index.html"""
@@ -127,11 +135,11 @@ def accuracy_test():
             enc_content = enc.splitlines()
             dec_content = dec.splitlines()
 
-        for i, e in enumerate(enc_content[:10]):
+        for i, e in enumerate(enc_content[:500]):
             if e:
-                result = {'enc': e.strip().strip('\n'),
-                          'dec': dec_content[i].strip().strip('\n'),
-                          'res': NORMALIZER.model_api(e.strip().strip('\n'))}
+                result = {'enc': e.strip().strip('\n').lower(),
+                          'dec': dec_content[i].strip().strip('\n').lower(),
+                          'res': NORMALIZER.model_api(e.strip().strip('\n').lower())}
                 yield result
     return Response(stream_with_context(
         stream_template('accuracy_testing.html', rows=generate(),
@@ -145,7 +153,7 @@ def readlines(filename):
 
 
 def set_tag(tag, words):
-    return {word: tag for word in words}
+    return {word.lower(): tag for word in words}
 
 
 if __name__ == '__main__':
@@ -153,7 +161,7 @@ if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
     tagged_words = {}
-    testing_path = os.path.join('normalizer', 'testing')
+    testing_path = os.path.join('normalizer', 'training', 'data', 'dataset', 'd_1pass')
 
     tagged_words.update(set_tag('phonetic_styles', readlines(os.path.join(
         testing_path, 'phonetic_style.dic'))))
@@ -179,4 +187,4 @@ if __name__ == '__main__':
                                  dataset_name=ARGS.dataset_name,
                                  checkpoint=ARGS.checkpoint,
                                  char_emb=ARGS.char_emb)
-        APP.run(debug=True, use_reloader=True)
+        APP.run(threaded=True, debug=True, use_reloader=True)
