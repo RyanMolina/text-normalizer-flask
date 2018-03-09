@@ -65,7 +65,10 @@ def find_errors():
     def _compare(enc, dec, res, tagged_words):
         diff, test_statistics, tagged_enc, tags_count = simplediff.check_errors(
             enc=enc, dec=dec, res=res, tagged_words=tagged_words)
-        return {'highlighted': Markup(diff), 'test_stats': test_statistics, 'tags_count': tags_count, 'tagged_enc': Markup(tagged_enc)}
+        return {'highlighted': Markup(diff),
+                'test_stats': test_statistics,
+                'tags_count': tags_count,
+                'tagged_enc': Markup(tagged_enc)}
     return dict(highlight_incorrect=_compare)
 
 
@@ -161,8 +164,11 @@ if __name__ == '__main__':
     os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
     tagged_words = {}
-    testing_path = os.path.join('normalizer', 'training', 'data', 'dataset', 'd_1pass')
 
+    if ARGS.twitter: 
+        testing_path = os.path.join('normalizer', 'testing')
+    else:
+        testing_path = os.path.join('normalizer', 'training', 'data', 'dataset', 'd_1pass')
     tagged_words.update(set_tag('phonetic_styles', readlines(os.path.join(
         testing_path, 'phonetic_style.dic'))))
 
