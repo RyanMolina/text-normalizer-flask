@@ -129,14 +129,8 @@ def accuracy_test():
         Yields:
             dict: The input, expected, and system output
         """
-        if '<space>' in enc:
-            enc_content = enc.replace(' ', '') \
-                             .replace('<space>', ' ').splitlines()
-            dec_content = dec.replace(' ', '') \
-                             .replace('<space>', ' ').splitlines()
-        else:
-            enc_content = enc.splitlines()
-            dec_content = dec.splitlines()
+        enc_content = enc.splitlines()
+        dec_content = dec.splitlines()
 
         for i, e in enumerate(enc_content[:500]):
             if e:
