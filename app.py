@@ -3,6 +3,7 @@ This module handles the page routing and rendering.
 It also handles the REST API for the text normalization model.
 """
 import os
+from pprint import pprint
 import tensorflow as tf
 from flask import (Flask, render_template, jsonify, Response,
                    stream_with_context, Markup, request)
@@ -84,8 +85,21 @@ def safe_division():
 
 
 @APP.context_processor
+def percentage_error():
+    """Jinja filter to do division with ZeroDivisionError handling."""
+    def _divide(tn, tp):
+        try:
+            return x / y
+        except ZeroDivisionError:
+            return 0
+    return dict(safe_division=_divide)
+
+
+
+@APP.context_processor
 def detokenize():
     def _detokenize(tokens):
+        print(tokens)
         return NORMALIZER.detokenizer.detokenize(tokens,
                                                  return_str=True)
     return dict(detokenize=_detokenize)
@@ -132,7 +146,7 @@ def accuracy_test():
         enc_content = enc.splitlines()
         dec_content = dec.splitlines()
 
-        for i, e in enumerate(enc_content[:500]):
+        for i, e in enumerate(enc_content[:5]):
             if e:
                 result = {'enc': e.strip().strip('\n').lower(),
                           'dec': dec_content[i].strip().strip('\n').lower(),
@@ -141,6 +155,11 @@ def accuracy_test():
     return Response(stream_with_context(
         stream_template('accuracy_testing.html', rows=generate(),
                                                  tagged_words=tagged_words)))
+
+@APP.route('/normalize/test/csv', methods=['POST'])
+def accuracy_test_csv():
+    csv_data = request.form['csv-data']
+    return "Hello, Word"
 
 
 def readlines(filename):
@@ -162,7 +181,8 @@ if __name__ == '__main__':
     if ARGS.twitter: 
         testing_path = os.path.join('normalizer', 'testing')
     else:
-        testing_path = os.path.join('normalizer', 'training', 'data', 'dataset', 'd_1pass')
+        testing_path = os.path.join('normalizer', 'training', 'data', 'dataset', 'dset')
+
     tagged_words.update(set_tag('phonetic_styles', readlines(os.path.join(
         testing_path, 'phonetic_style.dic'))))
 

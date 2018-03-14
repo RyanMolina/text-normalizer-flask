@@ -122,53 +122,6 @@
                                         + repeating_characters_normalized.value 
                                         + repeating_units_normalized.value 
                                         + contractions_normalized.value %}
-     <!-- <div class="grid-x align-center">
-        <div class="large-3 small-12 cell text-center">
-          <p>Total Words</p>
-          <div class="stat">{{ word_level_total.value }}</div>
-        </div>
-        <div class="large-3 small-12 cell text-center">
-          <p>Total Informal Words</p>
-          <div class="stat">{{ informal_words_total.value }}</div>
-        </div>
-        <div class="large-3 small-12 cell text-center">
-          <p>Total Formal Words</p>
-          <div class="stat">{{ word_level_total.value - informal_words_total.value }}</div>
-        </div>
-        <div class="large-3 small-12 cell text-center">
-          <p>Normalized Words</p>
-          <div class="stat">{{ informal_words_normalized.value }}</div>
-        </div>
-      </div>
-      <hr> -->
-      <!--<div class="grid-x align-center">
-        <div class="large-2 small-12 cell text-center">
-          <p>Accent Style</p>
-          <div class="stat">{{ accent_styles_normalized.value }} / {{ accent_styles_total.value }}</div>
-        </div>
-        <div class="large-2 small-12 cell text-center">
-          <p>Phonetic Style</p>
-          <div class="stat">{{ phonetic_styles_normalized.value }} / {{ phonetic_styles_total.value }}</div>
-        </div>
-        <div class="large-2 small-12 cell text-center">
-          <p>Contractions</p>
-          <div class="stat">{{ contractions_normalized.value }} / {{ contractions_total.value }}</div>
-        </div>
-        <div class="large-2 small-12 cell text-center">
-          <p>Misspellings</p>
-          <div class="stat">{{ misspellings_normalized.value }} / {{ misspellings_total.value }}</div>
-        </div>
-        <div class="large-2 small-12 cell text-center">
-          <p>Repeating Characters</p>
-          <div class="stat">{{ repeating_characters_normalized.value }} / {{ repeating_characters_total.value }}</div>
-        </div>
-        <div class="large-2 small-12 cell text-center">
-          <p>Repeating Units</p>
-          <div class="stat">{{ repeating_units_normalized.value }} / {{ repeating_units_total.value }}</div>
-        </div>
-      </div>
-      <hr> -->
-      {# End #}
 
       {% macro stats(tp, fp, tn, f_score) %}
       {# Accuracy #}
@@ -178,11 +131,11 @@
         {% set percentage_error.value = safe_division(tn, tn+tp) * 100 %}
         {% set accuracy.value = 100 - percentage_error.value %}
         <div class="large-3 small-12 cell text-center">
-          <p><abbr title="Number of informal words">Total</abbr></p>
+          <p><abbr title="Total Words">Total</abbr></p>
           <div class="stat">{{ tn+tp+fp }}</div>
         </div>
         <div class="large-3 small-12 cell text-center">
-          <p><abbr title="Correctly normalized words">Correct</abbr></p>
+          <p><abbr title="Normalized words">Correct</abbr></p>
           <div class="stat">{{ tp }}</div>
         </div>
         <div class="large-3 small-12 cell text-center">
@@ -217,7 +170,7 @@
       {# End #}
 
       {# F-Score #}
-    <div class="grid-x align-center">
+      <div class="grid-x align-center">
         {% set precision = namespace() %}
         {% set recall = namespace() %}
         {% set fscore = namespace() %}
