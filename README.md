@@ -3,8 +3,7 @@
 ## Linux
 ### To install in Linux
 #### Type in terminal
-`sudo chmod +x install.sh`
-`sudo ./install.sh`
+`source install.sh`
 
 ### To run in Linux
 #### Type in terminal
@@ -54,7 +53,4 @@ With test using test set
 `localhost:5000`
 or
 `127.0.0.1:5000`
-
-#### Allow .sh to be executable
-`sudo chmod +x [executable_script.sh]`
 

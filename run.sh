@@ -1,4 +1,4 @@
-./venv/bin/activate
+. venv/bin/activate
 python3 app.py \
     --model_name=model_tagalog_b \
     --dataset_name=model_tagalog_b \

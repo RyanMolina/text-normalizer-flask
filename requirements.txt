@@ -1,4 +1,4 @@
 nltk==3.2.5
 Flask==0.12.2
-Jinja2==2.9.6
+Jinja2==2.10
 tensorflow==1.4.1
