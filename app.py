@@ -181,7 +181,7 @@ if __name__ == '__main__':
     if ARGS.twitter: 
         testing_path = os.path.join('normalizer', 'testing')
     else:
-        testing_path = os.path.join('normalizer', 'training', 'data', 'dataset', 'dataset_bicol')
+        testing_path = os.path.join('normalizer', 'training', 'data', 'dataset', 'model_tagalog_b')
 
     tagged_words.update(set_tag('phonetic_styles', readlines(os.path.join(
         testing_path, 'phonetic_style.dic'))))
