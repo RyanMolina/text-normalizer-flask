@@ -89,10 +89,10 @@ def percentage_error():
     """Jinja filter to do division with ZeroDivisionError handling."""
     def _divide(tn, tp):
         try:
-            return x / y
+            return (tn-tp) / tp
         except ZeroDivisionError:
             return 0
-    return dict(safe_division=_divide)
+    return dict(percentage_error=_divide)
 
 
 
@@ -146,7 +146,7 @@ def accuracy_test():
         enc_content = enc.splitlines()
         dec_content = dec.splitlines()
 
-        for i, e in enumerate(enc_content[:5]):
+        for i, e in enumerate(enc_content[:100]):
             if e:
                 result = {'enc': e.strip().strip('\n').lower(),
                           'dec': dec_content[i].strip().strip('\n').lower(),
@@ -181,7 +181,7 @@ if __name__ == '__main__':
     if ARGS.twitter: 
         testing_path = os.path.join('normalizer', 'testing')
     else:
-        testing_path = os.path.join('normalizer', 'training', 'data', 'dataset', 'dset')
+        testing_path = os.path.join('normalizer', 'training', 'data', 'dataset', 'dataset_bicol')
 
     tagged_words.update(set_tag('phonetic_styles', readlines(os.path.join(
         testing_path, 'phonetic_style.dic'))))
