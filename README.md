@@ -14,7 +14,7 @@ Activate virutal environment
 With test using twitter set
 ```
 python3 app.py \
-    --model_name=model_tagalog_b \
+    --model_name=model_512 \
     --dataset_name=model_tagalog_b \
     --char_emb=True \
     --twitter=True
@@ -24,7 +24,7 @@ python3 app.py \
 With test using test set
 ```
 python3 app.py \
-    --model_name=model_tagalog_b \
+    --model_name=model_512 \
     --dataset_name=model_tagalog_b \
     --char_emb=True \
     --twitter=False
@@ -43,10 +43,10 @@ Activate virtual env
 `venv/Scripts/activate`
 
 With test using twitter set
-`python app.py --model_name=model_tagalog_b --dataset_name=model_tagalog_b --char_emb=True --twitter=True`
+`python app.py --model_name=model_512 --dataset_name=model_tagalog_b --char_emb=True --twitter=True`
 
 With test using test set
-`python app.py --model_name=model_tagalog_b --dataset_name=model_tagalog_b --char_emb=True --twitter=False`
+`python app.py --model_name=model_512 --dataset_name=model_tagalog_b --char_emb=True --twitter=False`
 
 
 #### Then access your localhost
